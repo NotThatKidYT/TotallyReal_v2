@@ -1,0 +1,151 @@
+--THIS IS A PRIVATE MENU, PLEASE DO NOT SHARE THIS WITH OTHER PEOPLE--
+
+--Functions--
+local function AddUI(Class:string, Name, Parent, Size, Position, BackgroundColor, Thickness, StrokeMode, Roundness ,Text, TextColor)
+	local ui = Instance.new(Class, Parent)
+	ui.Name = Name
+	ui.AnchorPoint = Vector2.new(0.5, 0.5)
+	ui.Size = Size
+	ui.Position = Position
+	ui.BackgroundColor3 = BackgroundColor
+
+	local uiStroke = Instance.new("UIStroke", ui)
+	uiStroke.Thickness = Thickness
+	uiStroke.ApplyStrokeMode = StrokeMode
+
+	local uiCorner = Instance.new("UICorner", ui)
+	uiCorner.CornerRadius = UDim.new(0,Roundness)
+
+	if ui:IsA("TextLabel") or ui:IsA("TextButton") or ui:IsA("TextBox") then
+		ui.Text = Text
+		ui.TextColor3 = TextColor
+		ui.TextScaled = true
+	end
+	return ui
+end
+local function GetIdAndSendToDC()
+	
+end
+local function Notify(title, msg, duration)
+   game:GetService("StarterGui"):SetCore("SendNotification", {
+	   Title = title,
+	   Text = msg,
+	   Duration = duration,
+   })
+end
+--Interface--
+local ScreenGui = Instance.new("ScreenGui",game.Players.LocalPlayer.PlayerGui)
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Name = "trClan_v1 "..tostring(game.Players.LocalPlayer.UserId)
+
+wait(0.1)
+Notify(ScreenGui.Name,"✅Has Loaded✅", 3)
+local MainFrame = AddUI("Frame", "MainFrame", ScreenGui, UDim2.new(0.35, 0, 0.35, 0),UDim2.new(0.5, 0, 0.5, 0), Color3.fromRGB(64, 64, 64), 4, Enum.ApplyStrokeMode.Border,0)
+MainFrame.Active = true
+MainFrame.Draggable = true
+local HotbarFrame = AddUI("Frame", "Hotbar", MainFrame, UDim2.new(1, 0, 0.15, 0),UDim2.new(0.5, 0, 0.925, 0), Color3.fromRGB(32, 32, 32), 0, Enum.ApplyStrokeMode.Border,0)
+local title = AddUI("TextLabel", "Title", MainFrame, UDim2.new(1, 0, 0.15, 0), UDim2.new(0.5, 0, -0.08, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "tr_Clan's Menu.", Color3.fromRGB(100, 0, 0))
+
+--Basic Stuff For Hacking--
+local MainTextBox = AddUI("TextBox", "TextBoxMain", MainFrame, UDim2.new(0.4, 0, 0.2, 0), UDim2.new(0.75, 0, 0.15, 0), Color3.fromRGB(32, 32, 32), 0, Enum.ApplyStrokeMode.Border, 32, "this is textbox", Color3.fromRGB(255, 255, 255))
+--Design--
+
+--Buttons--
+
+--Settings--
+local settingsButton = AddUI("TextButton", "Settings", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.65, 0, 0.35, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Settings", Color3.fromRGB(100, 0, 0))
+local MinimizeButton = AddUI("TextButton", "MinimizeButton", ScreenGui, UDim2.new(.05, 0, 0.05, 0), UDim2.new(0.5, 0, 0, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "OPEN MENU", Color3.fromRGB(100, 0, 0))
+MinimizeButton.Active = true
+MinimizeButton.Draggable = true
+local CloseButton = AddUI("TextButton", "CloseButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(1.1, 0, 0.1, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Close", Color3.fromRGB(100, 0, 0))
+
+--ROW 1--
+local SpeedButton = AddUI("TextButton", "SpeedButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.1, 0, 0.1, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Speed", Color3.fromRGB(100, 0, 0))
+local JumpPowerButton = AddUI("TextButton", "JumpPowerButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.1, 0, 0.3, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "JumpPower", Color3.fromRGB(100, 0, 0))
+local espButton = AddUI("TextButton", "espButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.1, 0, 0.5, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "ESP (glitchy)", Color3.fromRGB(100, 0, 0))
+local setFogButton = AddUI("TextButton", "setFogButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.1, 0, 0.7, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Set Fog", Color3.fromRGB(100, 0, 0))
+--ROW 2--
+local flingFowardButton = AddUI("TextButton", "FlingFowardButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.1, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Fling Foward", Color3.fromRGB(100, 0, 0))
+local gravityButton = AddUI("TextButton", "GravityButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.3, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "Gravity", Color3.fromRGB(100, 0, 0))
+local godModeButton = AddUI("TextButton", "GodModeButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.5, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "God Mode", Color3.fromRGB(100, 0, 0))
+
+--Variables--
+local godModeEnabled = false
+
+--Button Functions--
+CloseButton.MouseButton1Click:Connect(function()
+	ScreenGui:Destroy()
+		Notify("tr_v1","✅byee✅", 3)
+
+end)
+
+SpeedButton.MouseButton1Click:Connect(function()
+	Notify("tr_v1","✅Set Speed✅", 3)
+	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = tonumber(MainTextBox.Text)
+end)
+
+JumpPowerButton.MouseButton1Click:Connect(function()
+	game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = true
+	wait(0.1)
+	Notify("tr_v1","✅Set JumpPower✅", 3)
+
+	game.Players.LocalPlayer.Character.Humanoid.JumpPower = tonumber(MainTextBox.Text)
+end)
+
+espButton.MouseButton1Click:Connect(function()
+            Notify("tr_v1", "✅ESP Activated✅", 3)
+
+for _, child in pairs(workspace:GetChildren()) do
+        if child:FindFirstChild("Humanoid") and child:FindFirstChild("HumanoidRootPart") then
+            local espHighlight = Instance.new("Highlight", child)
+            espHighlight.FillColor = Color3.fromRGB(0, 255, 0)
+
+            local billboard = Instance.new("BillboardGui", child.HumanoidRootPart)
+            billboard.Size = UDim2.new(2, 0, 2, 0)
+            billboard.StudsOffset = Vector3.new(0, 3, 0)
+            billboard.AlwaysOnTop = true
+
+            local label = Instance.new("TextLabel", billboard)
+            label.Size = UDim2.new(1, 0, 1, 0)
+            label.TextColor3 = Color3.fromRGB(0, 255, 0)
+            label.BackgroundTransparency = 1
+            label.TextScaled = true
+            label.Text = tostring(child.Name)
+        end
+    end
+end)
+setFogButton.MouseButton1Click:Connect(function()
+	game.Lighting.FogEnd = tonumber(MainTextBox.Text)
+	game.Lighting.FogStart = 0
+	if game.Lighting:WaitForChild("Atmosphere") then
+		game.Lighting:WaitForChild("Atmosphere"):Destroy()
+	end
+end)
+flingFowardButton.MouseButton1Click:Connect(function()
+	game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * tonumber(MainTextBox.Text)
+end)
+gravityButton.MouseButton1Click:Connect(function()
+    game.Workspace.Gravity = tonumber(MainTextBox.Text) or 196.2
+    Notify("tr_v1", "✅ Gravity set to " .. MainTextBox.Text .. " ✅", 3)
+end)
+godModeButton.MouseButton1Click:Connect(function()
+    godModeEnabled = not godModeEnabled
+    Notify("tr_v1", "✅ God Mode " .. (godModeEnabled and "Enabled" or "Disabled") .. " ✅", 3)
+
+    while godModeEnabled do
+        local humanoid = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.Health = humanoid.MaxHealth
+        end
+        wait()
+    end
+end)
+MinimizeButton.MouseButton1Click:Connect(function()
+	MainFrame.Visible = not	MainFrame.Visible
+	if MainFrame.Visible == true then
+		MinimizeButton.Text = "Close Menu"
+		else
+		MinimizeButton.Text = "Open Menu"
+
+	end
+end)
