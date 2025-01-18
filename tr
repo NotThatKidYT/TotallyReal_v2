@@ -68,6 +68,7 @@ local setFogButton = AddUI("TextButton", "setFogButton", MainFrame, UDim2.new(.1
 local flingFowardButton = AddUI("TextButton", "FlingFowardButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.1, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Fling Foward", Color3.fromRGB(100, 0, 0))
 local gravityButton = AddUI("TextButton", "GravityButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.3, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "Gravity", Color3.fromRGB(100, 0, 0))
 local godModeButton = AddUI("TextButton", "GodModeButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.5, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "God Mode", Color3.fromRGB(100, 0, 0))
+local teleportButton = AddUI("TextButton", "TeleportButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.7, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "Teleport", Color3.fromRGB(100, 0, 0))
 
 --Variables--
 local godModeEnabled = false
@@ -122,7 +123,7 @@ setFogButton.MouseButton1Click:Connect(function()
 	end
 end)
 flingFowardButton.MouseButton1Click:Connect(function()
-	game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * tonumber(MainTextBox.Text)
+	game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * 1000
 end)
 gravityButton.MouseButton1Click:Connect(function()
     game.Workspace.Gravity = tonumber(MainTextBox.Text) or 196.2
@@ -149,3 +150,13 @@ MinimizeButton.MouseButton1Click:Connect(function()
 
 	end
 end)
+teleportButton.MouseButton1Click:Connect(function()
+    Notify("tr_v1", "✅ Teleporting... ✅", 3)
+    local targetPlayer = game.Players:FindFirstChild(MainTextBox.Text)
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
+    else
+        Notify("tr_v1", "❌ Player not found ❌", 3)
+    end
+end)
+
