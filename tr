@@ -123,7 +123,7 @@ setFogButton.MouseButton1Click:Connect(function()
 	end
 end)
 flingFowardButton.MouseButton1Click:Connect(function()
-	game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * 1000
+	game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * tonumber(MainTextBox.Text)
 end)
 gravityButton.MouseButton1Click:Connect(function()
     game.Workspace.Gravity = tonumber(MainTextBox.Text) or 196.2
