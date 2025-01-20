@@ -67,11 +67,12 @@ local setFogButton = AddUI("TextButton", "setFogButton", MainFrame, UDim2.new(.1
 --ROW 2--
 local flingFowardButton = AddUI("TextButton", "FlingFowardButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.1, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Fling Foward", Color3.fromRGB(100, 0, 0))
 local gravityButton = AddUI("TextButton", "GravityButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.3, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "Gravity", Color3.fromRGB(100, 0, 0))
-local godModeButton = AddUI("TextButton", "GodModeButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.5, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "God Mode", Color3.fromRGB(100, 0, 0))
+local noclipButton = AddUI("TextButton", "NoclipButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.5, 0), Color3.fromRGB(175, 0, 0), 4, Enum.ApplyStrokeMode.Border, 0, "Noclip", Color3.fromRGB(100, 0, 0))
 local teleportButton = AddUI("TextButton", "TeleportButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.7, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "Teleport", Color3.fromRGB(100, 0, 0))
 
 --Variables--
-local godModeEnabled = false
+local noclipEnabled  = false
+local noclipConnection
 
 --Button Functions--
 CloseButton.MouseButton1Click:Connect(function()
@@ -159,4 +160,27 @@ teleportButton.MouseButton1Click:Connect(function()
         Notify("tr_v1", "❌ Player not found ❌", 3)
     end
 end)
+noclipButton.MouseButton1Click:Connect(function()
+    noclipEnabled = not noclipEnabled
+    Notify("tr_v1", "✅ Noclip " .. (noclipEnabled and "Enabled" or "Disabled") .. " ✅", 3)
 
+    if noclipEnabled then
+        noclipConnection = game:GetService("RunService").Stepped:Connect(function()
+            for _, part in ipairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide then
+                    part.CanCollide = false
+                end
+            end
+        end)
+    else
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
+        for _, part in ipairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") and not part.CanCollide then
+                part.CanCollide = true
+            end
+        end
+    end
+end)
