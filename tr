@@ -1,275 +1,145 @@
---free to use--
+local function ButtonClick(Button: GuiButton, onClickUdim2 : UDim2)
+	local HoverTime = 0.1
+	local clickTime = 0.075
+	local originalSize = Button.Size -- Store the original size of the button
 
---Functions--
-local function AddUI(Class:string, Name, Parent, Size, Position, BackgroundColor, Thickness, StrokeMode, Roundness ,Text, TextColor)
-	local ui = Instance.new(Class, Parent)
-	ui.Name = Name
-	ui.AnchorPoint = Vector2.new(0.5, 0.5)
-	ui.Size = Size
-	ui.Position = Position
-	ui.BackgroundColor3 = BackgroundColor
-
-	local uiStroke = Instance.new("UIStroke", ui)
-	uiStroke.Thickness = Thickness
-	uiStroke.ApplyStrokeMode = StrokeMode
-
-	local uiCorner = Instance.new("UICorner", ui)
-	uiCorner.CornerRadius = UDim.new(0,Roundness)
-
-	if ui:IsA("TextLabel") or ui:IsA("TextButton") or ui:IsA("TextBox") then
-		ui.Text = Text
-		ui.TextColor3 = TextColor
-		ui.TextScaled = true
+	if not Button:IsA("GuiButton") then
+		return warn(Button.Name .. " is NOT a GuiButton.")
 	end
+	Button.MouseEnter:Connect(function()
+		Button:TweenSize(
+			originalSize + UDim2.new(0.01,0,0.01,0),
+			Enum.EasingDirection.Out,
+			Enum.EasingStyle.Linear,
+			HoverTime,
+			false
+		)
+	end)
+	Button.MouseLeave:Connect(function()
+		Button:TweenSize(
+			originalSize,
+			Enum.EasingDirection.Out,
+			Enum.EasingStyle.Linear,
+			HoverTime,
+			false
+		)
+	end)
+	Button.MouseButton1Down:Connect(function()
+		-- Shrink the button
+		Button:TweenSize(
+			originalSize - onClickUdim2,
+			Enum.EasingDirection.In,
+			Enum.EasingStyle.Linear,
+			clickTime,
+			true
+		)
+	end)
+	Button.MouseButton1Up:Connect(function()
+		Button:TweenSize(
+			originalSize,
+			Enum.EasingDirection.Out,
+			Enum.EasingStyle.Linear,
+			clickTime,
+			true
+		)
+	end)
+end
+
+local function newButton(name : string, parent, size, position, text, Color, transparency)
+	local newbutton = Instance.new("TextButton", parent)
+	newbutton.Name = name
+	newbutton.Size = size
+	newbutton.Position = position
+	newbutton.BackgroundColor3 = Color
+	newbutton.TextScaled = true
+	newbutton.Text = text
+	newbutton.TextColor3 = Color3.fromRGB(255, 255, 255)
+	newbutton.AnchorPoint = Vector2.new(0.5, 0.5)
+	newbutton.BackgroundTransparency = transparency
+		local corner = Instance.new("UICorner", newbutton)
+	corner.CornerRadius = UDim.new(0, 8)
+
+
+	return newbutton
+end
+local function addUI(name, Type, parent, size, position, Color, Transparency, Draggable)
+	local ui = Instance.new(Type, parent)
+	ui.Active = true
+	ui.Draggable = Draggable
+	ui.Name = name
+	ui.AnchorPoint = Vector2.new(0.5, 0.5)
+	ui.Size = size
+	ui.Position = position
+	ui.BackgroundColor3 = Color
+	ui.BackgroundTransparency = Transparency
+
+	local corner = Instance.new("UICorner", ui)
+	corner.CornerRadius = UDim.new(0, 8)
+
+	local gradient = Instance.new("UIGradient", ui)
+	gradient.Name = "BackgroundGrad"
+	gradient.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(33, 33, 44)),  -- First color at time 0
+		ColorSequenceKeypoint.new(1, Color) -- Second color at time 1 (background color)
+	})
+	gradient.Rotation = -45
 	return ui
 end
-local function addObject(name:string, objName:string, parent:Instance)
-	local newObj = Instance.new(objName, parent)
-	newObj.Name = name
-
-	return newObj
-end
-local function Notify(title, msg, duration)
-   game:GetService("StarterGui"):SetCore("SendNotification", {
-	   Title = title,
-	   Text = msg,
-	   Duration = duration,
-   })
-end
---Interface--
-local ScreenGui = Instance.new("ScreenGui",game.Players.LocalPlayer.PlayerGui)
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Name = "trClan_v1 "..tostring(game.Players.LocalPlayer.UserId)
-
-wait(0.1)
-Notify(ScreenGui.Name,"✅Has Loaded✅", 3)
-local MainFrame = AddUI("Frame", "MainFrame", ScreenGui, UDim2.new(0.35, 0, 0.35, 0),UDim2.new(0.5, 0, 0.5, 0), Color3.fromRGB(64, 64, 64), 4, Enum.ApplyStrokeMode.Border,0)
-MainFrame.Active = true
-MainFrame.Draggable = true
-local mainFrameGradient = addObject("GradientBackground", "UIGradient", MainFrame)
-
-mainFrameGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 200, 200)), -- Start color (Red)
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))  -- End color (Blue)
-})
-
-local HotbarFrame = AddUI("Frame", "Hotbar", MainFrame, UDim2.new(1, 0, 0.15, 0),UDim2.new(0.5, 0, 0.925, 0), Color3.fromRGB(32, 32, 32), 0, Enum.ApplyStrokeMode.Border,0)
-local title = AddUI("TextLabel", "Title", MainFrame, UDim2.new(1, 0, 0.15, 0), UDim2.new(0.5, 0, -0.08, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "tr_Clan's Menu.", Color3.fromRGB(100, 0, 0))
-
---Basic Stuff For Hacking--
-local MainTextBox = AddUI("TextBox", "TextBoxMain", MainFrame, UDim2.new(0.4, 0, 0.2, 0), UDim2.new(0.75, 0, 0.15, 0), Color3.fromRGB(32, 32, 32), 0, Enum.ApplyStrokeMode.Border, 32, "this is textbox", Color3.fromRGB(255, 255, 255))
---Design--
-
---Buttons--
-
---Settings--
-local settingsButton = AddUI("TextButton", "Settings", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.65, 0, 0.35, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Settings", Color3.fromRGB(100, 0, 0))
-local MinimizeButton = AddUI("TextButton", "MinimizeButton", ScreenGui, UDim2.new(.05, 0, 0.05, 0), UDim2.new(0.5, 0, 0, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "OPEN MENU", Color3.fromRGB(100, 0, 0))
-MinimizeButton.Active = true
-MinimizeButton.Draggable = true
-local CloseButton = AddUI("TextButton", "CloseButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(1.1, 0, 0.1, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Close", Color3.fromRGB(100, 0, 0))
-
---ROW 1--
-local SpeedButton = AddUI("TextButton", "SpeedButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.1, 0, 0.1, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Speed", Color3.fromRGB(100, 0, 0))
-local JumpPowerButton = AddUI("TextButton", "JumpPowerButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.1, 0, 0.3, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "JumpPower", Color3.fromRGB(100, 0, 0))
-local espButton = AddUI("TextButton", "espButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.1, 0, 0.5, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "ESP (glitchy)", Color3.fromRGB(100, 0, 0))
-local setFogButton = AddUI("TextButton", "setFogButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.1, 0, 0.7, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Set Fog", Color3.fromRGB(100, 0, 0))
---ROW 2--
-local flingFowardButton = AddUI("TextButton", "FlingFowardButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.1, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Fling Foward", Color3.fromRGB(100, 0, 0))
-local gravityButton = AddUI("TextButton", "GravityButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.3, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "Gravity", Color3.fromRGB(100, 0, 0))
-local godModeButton = AddUI("TextButton", "GodModeButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.5, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "God Mode", Color3.fromRGB(100, 0, 0))
-local teleportButton = AddUI("TextButton", "TeleportButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.7, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "Teleport", Color3.fromRGB(100, 0, 0))
-
---Variables--
-local godModeEnabled = false
-
---Button Functions--
-CloseButton.MouseButton1Click:Connect(function()
-	ScreenGui:Destroy()
-		Notify("tr_v1","✅byee✅", 3)
-
-end)
-
-SpeedButton.MouseButton1Click:Connect(function()
-	Notify("tr_v1","✅Set Speed✅", 3)
-	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = tonumber(MainTextBox.Text)
-end)
-
-JumpPowerButton.MouseButton1Click:Connect(function()
-	game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = true
-	wait(0.1)
-	Notify("tr_v1","✅Set JumpPower✅", 3)
-
-	game.Players.LocalPlayer.Character.Humanoid.JumpPower = tonumber(MainTextBox.Text)
-end)
-
-espButton.MouseButton1Click:Connect(function()
-            Notify("tr_v1", "✅ESP Activated✅", 3)
-
-for _, child in pairs(workspace:GetChildren()) do
-        if child:FindFirstChild("Humanoid") and child:FindFirstChild("HumanoidRootPart") then
-            local espHighlight = Instance.new("Highlight", child)
-            espHighlight.FillColor = Color3.fromRGB(0, 255, 0)
-
-            local billboard = Instance.new("BillboardGui", child.HumanoidRootPart)
-            billboard.Size = UDim2.new(2, 0, 2, 0)
-            billboard.StudsOffset = Vector3.new(0, 3, 0)
-            billboard.AlwaysOnTop = true
-
-            local label = Instance.new("TextLabel", billboard)
-            label.Size = UDim2.new(1, 0, 1, 0)
-            label.TextColor3 = Color3.fromRGB(0, 255, 0)
-            label.BackgroundTransparency = 1
-            label.TextScaled = true
-            label.Text = tostring(child.Name)
-        end
-    end
-end)
-setFogButton.MouseButton1Click:Connect(function()
-	game.Lighting.FogEnd = tonumber(MainTextBox.Text)
-	game.Lighting.FogStart = 0
-	if game.Lighting:WaitForChild("Atmosphere") then
-		game.Lighting:WaitForChild("Atmosphere"):Destroy()
-	end
-end)
-flingFowardButton.MouseButton1Click:Connect(function()
-	game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * tonumber(MainTextBox.Text)
-end)
-gravityButton.MouseButton1Click:Connect(function()
-    game.Workspace.Gravity = tonumber(MainTextBox.Text) or 196.2
-    Notify("tr_v1", "✅ Gravity set to " .. MainTextBox.Text .. " ✅", 3)
-end)
-godModeButton.MouseButton1Click:Connect(function()
-    godModeEnabled = not godModeEnabled
-    Notify("tr_v1", "✅ God Mode " .. (godModeEnabled and "Enabled" or "Disabled") .. " ✅", 3)
-
-    while godModeEnabled do
-        local humanoid = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-        if humanoid then
-            humanoid.Health = humanoid.MaxHealth
-        end
-        wait()
-    end
-end)
-MinimizeButton.MouseButton1Click:Connect(function()
-	MainFrame.Visible = not	MainFrame.Visible
-	if MainFrame.Visible == true then
-		MinimizeButton.Text = "Close Menu"
-		else
-		MinimizeButton.Text = "Open Menu"
-
-	end
-end)
-teleportButton.MouseButton1Click:Connect(function()
-    Notify("tr_v1", "✅ Teleporting... ✅", 3)
-    local targetPlayer = game.Players:FindFirstChild(MainTextBox.Text)
-    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
-    else
-        Notify("tr_v1", "❌ Player not found ❌", 3)
-    end
-end)
---THIS IS A PRIVATE MENU, PLEASE DO NOT SHARE THIS WITH OTHER PEOPLE--
-
---Functions--
-local function AddUI(Class:string, Name, Parent, Size, Position, BackgroundColor, Thickness, StrokeMode, Roundness ,Text, TextColor)
-	local ui = Instance.new(Class, Parent)
-	ui.Name = Name
-	ui.AnchorPoint = Vector2.new(0.5, 0.5)
-	ui.Size = Size
-	ui.Position = Position
-	ui.BackgroundColor3 = BackgroundColor
-
-	local uiStroke = Instance.new("UIStroke", ui)
-	uiStroke.Thickness = Thickness
-	uiStroke.ApplyStrokeMode = StrokeMode
-
-	local uiCorner = Instance.new("UICorner", ui)
-	uiCorner.CornerRadius = UDim.new(0,Roundness)
-
-	if ui:IsA("TextLabel") or ui:IsA("TextButton") or ui:IsA("TextBox") then
-		ui.Text = Text
-		ui.TextColor3 = TextColor
-		ui.TextScaled = true
-	end
-	return ui
-end
-local function GetIdAndSendToDC()
-	
-end
-local function Notify(title, msg, duration)
-   game:GetService("StarterGui"):SetCore("SendNotification", {
-	   Title = title,
-	   Text = msg,
-	   Duration = duration,
-   })
-end
---Interface--
-local ScreenGui = Instance.new("ScreenGui",game.Players.LocalPlayer.PlayerGui)
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Name = "trClan_v1 "..tostring(game.Players.LocalPlayer.UserId)
-
-wait(0.1)
-Notify(ScreenGui.Name,"✅Has Loaded✅", 3)
-local MainFrame = AddUI("Frame", "MainFrame", ScreenGui, UDim2.new(0.35, 0, 0.35, 0),UDim2.new(0.5, 0, 0.5, 0), Color3.fromRGB(64, 64, 64), 4, Enum.ApplyStrokeMode.Border,0)
-MainFrame.Active = true
-MainFrame.Draggable = true
-local HotbarFrame = AddUI("Frame", "Hotbar", MainFrame, UDim2.new(1, 0, 0.15, 0),UDim2.new(0.5, 0, 0.925, 0), Color3.fromRGB(32, 32, 32), 0, Enum.ApplyStrokeMode.Border,0)
-local title = AddUI("TextLabel", "Title", MainFrame, UDim2.new(1, 0, 0.15, 0), UDim2.new(0.5, 0, -0.08, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "tr_Clan's Menu.", Color3.fromRGB(100, 0, 0))
-
---Basic Stuff For Hacking--
-local MainTextBox = AddUI("TextBox", "TextBoxMain", MainFrame, UDim2.new(0.4, 0, 0.2, 0), UDim2.new(0.75, 0, 0.15, 0), Color3.fromRGB(32, 32, 32), 0, Enum.ApplyStrokeMode.Border, 32, "this is textbox", Color3.fromRGB(255, 255, 255))
---Design--
-
---Buttons--
-
---Settings--
-local settingsButton = AddUI("TextButton", "Settings", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.65, 0, 0.35, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Settings", Color3.fromRGB(100, 0, 0))
-local MinimizeButton = AddUI("TextButton", "MinimizeButton", ScreenGui, UDim2.new(.05, 0, 0.05, 0), UDim2.new(0.5, 0, 0, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "OPEN MENU", Color3.fromRGB(100, 0, 0))
-MinimizeButton.Active = true
-MinimizeButton.Draggable = true
-local CloseButton = AddUI("TextButton", "CloseButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(1.1, 0, 0.1, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Close", Color3.fromRGB(100, 0, 0))
-
---ROW 1--
-local SpeedButton = AddUI("TextButton", "SpeedButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.1, 0, 0.1, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Speed", Color3.fromRGB(100, 0, 0))
-local JumpPowerButton = AddUI("TextButton", "JumpPowerButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.1, 0, 0.3, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "JumpPower", Color3.fromRGB(100, 0, 0))
-local espButton = AddUI("TextButton", "espButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.1, 0, 0.5, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "ESP (glitchy)", Color3.fromRGB(100, 0, 0))
-local setFogButton = AddUI("TextButton", "setFogButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.1, 0, 0.7, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Set Fog", Color3.fromRGB(100, 0, 0))
---ROW 2--
-local flingFowardButton = AddUI("TextButton", "FlingFowardButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.1, 0), Color3.fromRGB(175, 0, 0),4,  Enum.ApplyStrokeMode.Border, 0, "Fling Foward", Color3.fromRGB(100, 0, 0))
-local gravityButton = AddUI("TextButton", "GravityButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.3, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "Gravity", Color3.fromRGB(100, 0, 0))
-local noclipButton = AddUI("TextButton", "NoclipButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.5, 0), Color3.fromRGB(175, 0, 0), 4, Enum.ApplyStrokeMode.Border, 0, "Noclip", Color3.fromRGB(100, 0, 0))
-local teleportButton = AddUI("TextButton", "TeleportButton", MainFrame, UDim2.new(.15, 0, 0.15, 0), UDim2.new(0.3, 0, 0.7, 0), Color3.fromRGB(175, 0, 0),4, Enum.ApplyStrokeMode.Border, 0, "Teleport", Color3.fromRGB(100, 0, 0))
-
---Variables--
-local noclipEnabled  = false
-local noclipConnection
 local player = game.Players.LocalPlayer
+local localPlayer = game.Players.LocalPlayer
+local players = game:GetService("Players")
 local character = player.Character or player.CharacterAdded:Wait()
---Button Functions--
-CloseButton.MouseButton1Click:Connect(function()
-	ScreenGui:Destroy()
-		Notify("tr_v1","✅byee✅", 3)
+local tServ = game:GetService("TweenService")
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local userInput = game:GetService("UserInputService")
+local runService = game:GetService("RunService")
+-- /-/ Structure /-/ --
+local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
+ScreenGui.ResetOnSpawn = true
+local mFrame = addUI("Main", "Frame", ScreenGui, UDim2.new(0.4,0,0.35,0), UDim2.new(0.5, 0, 0.5, 0), Color3.fromRGB(33, 33, 44), 0, true)
+local title = Instance.new("TextLabel", mFrame)
+local mainTextbox = addUI("textboxMain", "TextBox", mFrame, UDim2.new(0.4,0,0.15,0), UDim2.new(0.22, 0, 0.22, 0), Color3.fromRGB(0, 0, 0), 0.5, true)
+mainTextbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+mainTextbox.Text = "Insert Player Names For TP, or set speed or jumpPower"
+title.BackgroundTransparency = 1
+local titlemsgs = {
+	"enjoy!",
+	"doesnt this ui look so sigma?",
+	"erm",
+	"imagine hacking🤓",
+	"TIP: if it doesnt work, execute the menu again",
+	"TIP: if you have any ideas, then join: https://discord.gg/XMB5N8V6zV"
+}
+title.Text = " /-/ totallyreal_v2 /-/ \n"..titlemsgs[math.random(1, #titlemsgs)]
+title.TextScaled = true
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Size = UDim2.new(1,0,0.15,0)
+local titlegr = Instance.new("UIGradient", title)
+	titlegr.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(150,150,150)),  -- First color at time 0
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)) -- Second color at time 1 (background color)
+	})
+	titlegr.Rotation = -90
 
-end)
+	--SETTINGS MENU--
+	local sFrame = addUI("Settings", "Frame", ScreenGui, UDim2.new(0.25,0,0.25,0), UDim2.new(0.5, 0, 0.5, 0), Color3.fromRGB(33, 33, 44), 0, true)
+	sFrame.Visible = false
+	local sTitle = Instance.new("TextLabel", sFrame)
+	sTitle.BackgroundTransparency = 1
+	sTitle.Text = "Settings \n".."we finally got one!"
+	sTitle.TextScaled = true
+	sTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+	sTitle.Size = UDim2.new(1,0,0.15,0)
+	local sTitlegr = Instance.new("UIGradient", sTitle)
+		sTitlegr.Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(150,150,150)),  -- First color at time 0
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)) -- Second color at time 1 (background color)
+		})
+		sTitlegr.Rotation = -90
+-- Button Click Functions
 
-SpeedButton.MouseButton1Click:Connect(function()
-	Notify("tr_v1","✅Set Speed✅", 3)
-	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = tonumber(MainTextBox.Text)
-end)
-
-JumpPowerButton.MouseButton1Click:Connect(function()
-	game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = true
-	wait(0.1)
-	Notify("tr_v1","✅Set JumpPower✅", 3)
-
-	game.Players.LocalPlayer.Character.Humanoid.JumpPower = tonumber(MainTextBox.Text)
-end)
-
-espButton.MouseButton1Click:Connect(function()
-            Notify("tr_v1", "✅ESP Activated✅", 3)
-
-for _, child in pairs(workspace:GetChildren()) do
+local function toggleESP()
+    for _, child in pairs(workspace:GetChildren()) do
         if child:FindFirstChild("Humanoid") and child:FindFirstChild("HumanoidRootPart") then
             local espHighlight = Instance.new("Highlight", child)
             espHighlight.FillColor = Color3.fromRGB(0, 255, 0)
@@ -287,60 +157,224 @@ for _, child in pairs(workspace:GetChildren()) do
             label.Text = tostring(child.Name)
         end
     end
-end)
-setFogButton.MouseButton1Click:Connect(function()
-	game.Lighting.FogEnd = tonumber(MainTextBox.Text)
-	game.Lighting.FogStart = 0
-	if game.Lighting:WaitForChild("Atmosphere") then
-		game.Lighting:WaitForChild("Atmosphere"):Destroy()
-	end
-end)
-flingFowardButton.MouseButton1Click:Connect(function()
-	game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * tonumber(MainTextBox.Text)
-end)
-gravityButton.MouseButton1Click:Connect(function()
-    game.Workspace.Gravity = tonumber(MainTextBox.Text) or 196.2
-    Notify("tr_v1", "✅ Gravity set to " .. MainTextBox.Text .. " ✅", 3)
-end)
-godModeButton.MouseButton1Click:Connect(function()
-    godModeEnabled = not godModeEnabled
-    Notify("tr_v1", "✅ God Mode " .. (godModeEnabled and "Enabled" or "Disabled") .. " ✅", 3)
+end
 
-    while godModeEnabled do
-        local humanoid = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-        if humanoid then
-            humanoid.Health = humanoid.MaxHealth
+local function onSpeedClick()
+	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = tonumber(mainTextbox.Text)
+end
+local function onJumpClick()
+	game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = true
+	game.Players.LocalPlayer.Character.Humanoid.JumpPower = tonumber(MainTextBox.Text)
+end
+local function onTPClick()
+	game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.workspace:FindFirstChild(tostring(mainTextbox.Text))
+end
+local savedCFrame = CFrame.new(0,0,0)
+local function onSavePosClick()
+	savedCFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+end
+
+local function onLoadPosClick()
+	game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedCFrame
+end
+
+local function onSettingsClick()
+	print("Opening settings")
+end
+
+local function onExitClick()
+	ScreenGui:Destroy()
+end
+
+local function onMiscClick()
+	print("Miscellaneous action")
+end
+
+local flying = false
+local speed = 50 -- Adjust flying speed here
+local bodyVelocity
+local bodyGyro
+
+local function startFlying()
+    if flying then return end
+    flying = true
+
+    bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    bodyVelocity.Parent = humanoidRootPart
+
+    bodyGyro = Instance.new("BodyGyro")
+    bodyGyro.CFrame = humanoidRootPart.CFrame
+    bodyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+    bodyGyro.P = 9e4
+    bodyGyro.Parent = humanoidRootPart
+
+    print("Fly mode activated")
+
+  local TweenService = game:GetService("TweenService")
+
+runService.RenderStepped:Connect(function()
+    if flying then
+        local moveDirection = Vector3.zero
+        local camera = workspace.CurrentCamera
+        local lookVector = camera.CFrame.LookVector -- Get the direction the player is looking
+        local rightVector = camera.CFrame.RightVector
+        local upVector = Vector3.new(0, 1, 0)
+
+        if userInput:IsKeyDown(Enum.KeyCode.W) then
+            moveDirection = moveDirection + (lookVector * speed)
         end
-        wait()
+        if userInput:IsKeyDown(Enum.KeyCode.S) then
+            moveDirection = moveDirection - (lookVector * speed)
+        end
+        if userInput:IsKeyDown(Enum.KeyCode.A) then
+            moveDirection = moveDirection - (rightVector * speed)
+        end
+        if userInput:IsKeyDown(Enum.KeyCode.D) then
+            moveDirection = moveDirection + (rightVector * speed)
+        end
+        if userInput:IsKeyDown(Enum.KeyCode.Space) then
+            moveDirection = moveDirection + (upVector * speed)
+        end
+        if userInput:IsKeyDown(Enum.KeyCode.LeftControl) then
+            moveDirection = moveDirection - (upVector * speed)
+        end
+
+        -- Smooth movement using Lerp
+        bodyVelocity.Velocity = bodyVelocity.Velocity:Lerp(moveDirection, 1) -- Adjust smoothing factor
+
+        -- Smooth rotation
+        bodyGyro.CFrame = bodyGyro.CFrame:Lerp(camera.CFrame, 1)
     end
 end)
-MinimizeButton.MouseButton1Click:Connect(function()
-	MainFrame.Visible = not	MainFrame.Visible
-	if MainFrame.Visible == true then
-		MinimizeButton.Text = "Close Menu"
-		else
-		MinimizeButton.Text = "Open Menu"
 
-	end
-end)
-teleportButton.MouseButton1Click:Connect(function()
-    Notify("tr_v1", "✅ Teleporting... ✅", 3)
-    local targetPlayer = game.Players:FindFirstChild(MainTextBox.Text)
-    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
+end
+
+local function stopFlying()
+    if not flying then return end
+    flying = false
+
+    if bodyVelocity then
+        bodyVelocity:Destroy()
+    end
+    if bodyGyro then
+        bodyGyro:Destroy()
+    end
+
+    print("Fly mode deactivated")
+end
+
+local function toggleFly()
+    if flying then
+        stopFlying()
     else
-        Notify("tr_v1", "❌ Player not found ❌", 3)
+        startFlying()
+		speed = tonumber(mainTextbox.Text)
     end
-end)
-noclipButton.MouseButton1Click:Connect(function()
-     noclipEnabled = not noclipEnabled
-    Notify("tr_v1", "✅ Noclip " .. (noclipEnabled and "Enabled" or "Disabled") .. " ✅", 3)
+end
+local runService = game:GetService("RunService")
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+local humanoidRootPart = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
 
-    if noclipEnabled then
-		 for _, part in pairs(character:GetDescendants()) do
-     	   if part:IsA("BasePart") then
-         	   part.CanCollide = false
-        	end
-    	end
+local Attached = false
+local followConnection = nil -- Store connection to disconnect later
+
+local function AttachTo()
+local targetPlayer = game.Players:FindFirstChild(tostring(mainTextbox.Text))
+    if not targetPlayer or not targetPlayer.Character then return end
+    local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not targetRoot then return end
+    
+    -- Stop previous follow connection if already attached
+    if followConnection then
+        followConnection:Disconnect()
+        followConnection = nil
     end
-end)
+
+    Attached = not Attached -- Toggle state
+
+    if Attached then
+        followConnection = runService.RenderStepped:Connect(function()
+            if humanoidRootPart and targetRoot then
+                humanoidRootPart.CFrame = targetRoot.CFrame
+            else
+                -- Stop following if parts are missing
+                followConnection:Disconnect()
+                followConnection = nil
+                Attached = false
+            end
+        end)
+    end
+end
+local function ToggleSettings()
+	sFrame.Visible = not sFrame.Visible
+end
+-- Button Details
+local buttonsData = {
+	{ "ESP", toggleESP },
+	{ "Noclip", onNoclipClick },
+	{ "Set WalkSpeed", onSpeedClick },
+	{ "Set JumpPower", onJumpClick },
+	{ "Attach To", AttachTo },
+	{"Fly", toggleFly},
+	{ "Teleport To Player", onTPClick },
+	{ "Save Position", onSavePosClick },
+	{ "Teleport To Saved Position", onLoadPosClick },
+	{ "Exit", onExitClick },
+	{ "Settings", ToggleSettings },
+}
+
+-- Creating Buttons
+for i, data in ipairs(buttonsData) do
+	local btn = newButton(
+		data[1], 
+		mFrame, 
+		UDim2.new(0.5, 0, 0.07, 0), 
+		UDim2.new(0.7, 0, 0.08 + (i * 0.08), 0), 
+		data[1], 
+		Color3.fromRGB(0, 0, 0),
+		0.5
+	)
+
+	ButtonClick(btn, UDim2.new(0.005, 0, 0.005, 0))
+
+	btn.MouseButton1Click:Connect(data[2])
+end
+local darkMode = true
+local function setMode()
+	darkMode = not darkMode
+	local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, 0)
+	local propsL = {
+		["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+	}
+	local propsD = {
+		["BackgroundColor3"] = Color3.fromRGB(33, 33, 44)
+	}
+	if darkMode == false then
+	tServ:Create(mFrame, tweenInfo, propsL):Play()
+		else
+	tServ:Create(mFrame, tweenInfo, propsD):Play()
+	end
+end
+local SbuttonsData = {
+	{ "Change Mode", setMode}
+}
+
+-- Creating Buttons
+for i, data in ipairs(SbuttonsData) do
+	local btn = newButton(
+		data[1], 
+		sFrame, 
+		UDim2.new(0.5, 0, 0.07, 0), 
+		UDim2.new(0.7, 0, 0.1 + (i * 0.08), 0), 
+		data[1], 
+		Color3.fromRGB(0, 0, 0),
+		0.5
+	)
+
+	ButtonClick(btn, UDim2.new(0.005, 0, 0.005, 0))
+
+	btn.MouseButton1Click:Connect(data[2])
+end
